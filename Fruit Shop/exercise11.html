@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		body{
+			
+			
+			font-family: Arial;
+		}
+		.main{
+			
+			padding:5%;
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+			column-gap: 30px;
+			grid-row-gap: 30px;
+			transition: width 2s;
+
+
+
+		}
+		.cart{	
+			position: fixed;
+			top:0;
+			bottom:0;
+			right:0;
+			width:30%;
+			display: none;
+		}
+		.banner{
+			
+			border-style: solid;
+			border-width: 1px;
+			border-color: lightgray;
+			display: grid;
+
+
+		}
+		.banner img{
+			width: 90%;
+			height: 200px;
+			object-fit: contain;
+			margin-left: 5%;
+			margin-right: 5%;
+			margin-top:10%;
+
+		}
+		.title{
+			text-align: center;
+			font-weight: bold;
+			font-size: 18px;
+
+
+		}
+		.price{
+			text-align: center;
+			margin-top: 0;
+			color: #99154a;
+
+		}
+		.banner button{
+			font-size: 16px;
+			border:1px solid #18ab29;
+			border-radius: 12px;
+			padding: 10px 20px;			
+			height: 40px;
+			background-color: white;
+			color:#18ab29;
+			cursor: pointer;
+			margin-bottom: 20px;			
+			margin-right: auto;
+			margin-left: auto;
+			
+
+		}
+
+		.banner button:hover{
+			font-weight: bold;
+			border-width: 2px;
+		}
+
+		.tableTitle{
+			text-decoration: underline;
+			font-weight: bold;
+			text-align: center;
+		}
+		.cartItems{
+			text-align: center;
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+		.totalPrice{
+			text-align: right;
+			padding:15px 35px;
+			margin-top: 20px;
+			border-top: 1px solid lightgray;
+		}
+	</style>
+	<title></title>
+</head>
+<body>
+
+
+	<script type="text/javascript">
+		
+		//--------------------Model----------------------
+
+		Menu=[
+			{name:'Apple',price:3,sorce:'Fruit/apple.jpg',quantity:0},
+			{name:'Orange',price:4,sorce:'Fruit/orange.jpg',quantity:0},
+			{name:'strawberry',price:6,sorce:'Fruit/strawberry.jpg',quantity:0},
+			{name:'Cucumber',price:1,sorce:'Fruit/Cucumber.jpg',quantity:0},
+			{name:'Peach',price:4,sorce:'Fruit/peach.jpg',quantity:0},
+			{name:'banana',price:3,sorce:'Fruit/banana.jpg',quantity:0},
+			{name:'watermelon',price:8,sorce:'Fruit/watermelon.jpg',quantity:0},
+			{name:'pinapple',price:10,sorce:'Fruit/pinapple.jpg',quantity:0},
+			{name:'pomegrant',price:4,sorce:'Fruit/pomegrant.jpg',quantity:0},
+			{name:'coconut',price:8,sorce:'Fruit/coconut.jpg',quantity:0},
+			{name:'grape',price:4,sorce:'Fruit/grape.jpg',quantity:0},
+			{name:'blackberry',price:10,sorce:'Fruit/blackberry.jpg',quantity:0},
+
+		]
+
+		isNotInitCart = true
+
+		function addQuantity(item){
+			item.quantity=item.quantity+1
+		}
+
+
+		//----------------------View---------------------------
+
+		productsElement = document.createElement('div')
+		productsElement.setAttribute('class','main')
+		document.body.appendChild(productsElement)
+		cartElement = document.createElement('div');
+		cartElement.setAttribute('class','cart')
+		document.body.appendChild(cartElement);		
+		Menu.forEach(function(fruit){
+			
+			bannerElement = document.createElement('div')
+			bannerElement.setAttribute('class','banner')
+			productsElement.appendChild(bannerElement)
+			picElement=document.createElement('img');
+			picElement.src=fruit.sorce
+			bannerElement.appendChild(picElement)
+			titleElement=document.createElement('p')
+			titleElement.setAttribute('class','title')
+			titleElement.innerText = fruit.name
+			bannerElement.appendChild(titleElement)
+			priceElement=document.createElement('p')
+			priceElement.setAttribute('class','price')
+			priceElement.innerText=fruit.price+'$'
+			bannerElement.appendChild(priceElement)
+			buttonElement=document.createElement('button')
+			buttonElement.innerText='Add to cart'
+			buttonElement.id=fruit.name;
+			buttonElement.onclick=addToCart
+			bannerElement.appendChild(buttonElement)
+		})
+
+		
+
+		function initCart(){
+			//document.body.style = 'grid-template-columns: 70% 30% ;'
+			document.body.style = 'margin-right:30%;'
+			cartElement.style = 'display:block;'
+			cartTextElement=document.createElement('div');
+			cartTextElement.innerHTML = '<h3>Your Cart:</h3><hr>';
+			cartElement.appendChild(cartTextElement)
+			cartTableElement=document.createElement('div');
+			cartTableElement.style='display:grid;grid-template-columns:1fr 1fr 1fr'
+			cartElement.appendChild(cartTableElement)
+			titles=['Name','Quantity','Price']
+			titles.forEach(function(tlt){
+				tltElement=document.createElement('span')
+				tltElement.innerText=tlt
+				tltElement.setAttribute('class','tableTitle')
+				cartTableElement.appendChild(tltElement)
+			})	
+			totalPriceElement=document.createElement('div')	
+			totalPriceElement.setAttribute('class','totalPrice')		
+			
+			
+		}
+
+		function showOnCart(item){
+			
+			if(item.quantity===0){				
+				addNewItem(item)
+			}else{				
+				addQuantity(item)
+				quantityElement=document.getElementById('Q#'+item.name)
+				priceElement=document.getElementById('P#'+item.name)
+				quantityElement.innerText=item.quantity
+				fruitPrice= item.quantity * item.price + '$'
+				priceElement.innerText = fruitPrice;
+
+			}
+			
+
+		}
+
+		function addNewItem(item){
+			nameElement=document.createElement('span')			
+			nameElement.innerText = item.name;
+			nameElement.setAttribute('class','cartItems')
+			cartTableElement.appendChild(nameElement)
+			item.quantity=1;
+			quantityElement = document.createElement('span');
+			quantityElement.innerText=item.quantity;
+			quantityElement.setAttribute('class','cartItems')
+			quantityElement.id='Q#'+item.name
+			cartTableElement.appendChild(quantityElement);
+			priceElement=document.createElement('span');
+			fruitPrice= item.quantity * item.price +'$'
+			priceElement.innerText = fruitPrice;
+			priceElement.setAttribute('class','cartItems')
+			priceElement.id='P#'+item.name
+			cartTableElement.appendChild(priceElement)
+
+
+		}
+
+		function showTotal(){
+			totalPrice=0
+			Menu.forEach(function(item){
+				newItemPice=item.quantity*item.price
+				totalPrice=totalPrice+newItemPice
+				})
+			totalPriceElement.innerText='Total Price: ' + totalPrice+'$';
+			cartElement.appendChild(totalPriceElement)
+			}
+
+		
+
+		//-------------------------Control-------------------------
+
+		function addToCart(event){
+			if (isNotInitCart){
+				initCart();
+				isNotInitCart = false
+			}			
+			clickedItem = Menu.filter(function(fruit){
+				if (event.target.id===fruit.name){
+					return true
+				}
+				else{
+					return false
+				}
+			})
+			showOnCart(clickedItem[0])
+			
+
+			showTotal()
+			
+			
+
+		}
+
+		
+
+		
+
+		
+
+
+	</script>
+
+</body>
+</html>

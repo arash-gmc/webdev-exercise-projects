@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Arash's Note Keeper</title>
+
+	<style type="text/css">
+		body{
+			font-family: Arial;
+			background-color: #edf0f0;
+		}
+		.upper-section{
+			display: grid;
+			grid-template-columns: 1fr 2fr;
+			margin-left: 5%;
+			margin-right: 5%;
+
+		}
+		.title p{			
+			font-family: Trebuchet MS;
+			font-size: 44px;
+			text-align: left;
+			padding-top: 0;
+			width:90%;
+			margin-left: 20%;			
+			margin-bottom: 20px;
+			margin-top: 20px;
+			height: 50px;			
+		}
+		
+		
+		.title span{
+			margin-left: 26%;
+			font-size: 32px;
+			color: red;
+			margin-top: 0;
+			text-align: center;
+			display: block;
+		}
+		.add-pannel{
+			display: grid;
+			grid-template-columns: 86% 40px;
+			margin-top: 20px;
+			min-width: 280px;
+
+		}
+		.add-pannel input{
+			font-size: 18px;
+			height:34px;
+			min-width: 60px;			
+			vertical-align: center;
+			margin-right: 12px;
+			font-family: Arial;
+			padding-left: 6px;
+		}
+		.add-pannel input::placeholder{
+			text-align: center;
+		}
+
+
+		.add-pannel textarea{
+			resize: none;
+			height:100px;	
+			margin-top: 10px;
+			grid-column: 1 / span 2;
+			margin-right: 0;
+			font-family: Arial;
+			padding-left: 6px;
+			padding-top: 6px;	
+		}
+		.add-pannel textarea::placeholder{
+			text-align: center;			
+			padding-top:10%;
+		}
+		.add-pannel button{
+			font-size: 36px;
+			color:white;
+			height:40px;
+			width:40px;
+			background-color: rgb(244,190,30);
+			border:none;
+			border-radius: 10px;
+			vertical-align: center;
+			
+
+		}
+
+		.main-note-box{
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			margin-left: 5%;
+			margin-right: 5%;			
+			grid-row-gap: 30px;
+			grid-column-gap: 30px;
+			margin-top: 20px;
+
+		}
+
+		.note-box{
+			border: 1px solid lightgray;
+			height:220px;
+			padding:0px 0 20px 20px;
+			display: grid;
+			grid-template-columns: 1fr 40px 40px;
+			position: relative;
+			min-width: 260px;
+			background-color: white;
+		}
+
+		.note-title{
+			font-size: 18px;
+			font-weight: bold;
+			color: gray;
+			height:22px;
+			overflow: hidden;
+			margin-bottom: 16px;
+			display: inline;
+			
+
+		}
+
+		.note-title span{
+			font-size: 12px;
+			font-weight: normal;
+			margin-left: 4px;
+			color: darkgray;
+		}
+		.description{
+			overflow: auto;
+			height:165px;
+			grid-column: 1/ span 3;
+			padding-right: 10px;
+			margin-top: 6px;
+			background-color: white;
+		}
+
+		.note-box button{
+			color: lightgray;
+			background-color: white;
+			border: none;
+			font-size: 28px;
+			cursor: pointer;
+			transition: color 0.3s;
+			
+		}
+		.note-box button:hover{
+			color: gray;
+		}
+
+		.edit-box{
+			position:absolute;
+			display: grid;
+			grid-template-columns: 1fr 54px 54px;
+			left:0;
+			right: 0;			
+			top: 0;
+			bottom: 0;
+			min-width: 260px;
+		}
+
+		.title-edit{
+			font-size: 18px;
+			font-weight: bold;			
+			height:24px;
+			margin-top: 14px;
+			margin-left: 12px;
+			padding-left: 7px;
+			border: 1px solid lightgray;
+			width: 88%;
+			
+		}
+		.description-edit{
+			font-family: Arial;
+			font-size: 16px;
+			resize: none;
+			overflow: auto;
+			height:160px;
+			grid-column: 1/ span 3;
+			padding-right: 10px;
+			border: 1px solid lightgray;
+			margin:8px 14px 16px 14px;
+			padding: 11px 8px 8px 5px;
+			width: 90%;
+
+
+		}
+		.edit-box button{
+			font-size: 12px;
+			height:24px;
+			margin-top: 14px;
+			
+		}
+	</style>
+</head>
+<body>
+	<div class='upper-section'>
+		
+		<div class='add-pannel'>
+			<input type="text" id="title" maxlength="64" placeholder="New note title">
+			<button id='submit' onclick='submit()'>+</button>
+			<textarea style='resize: none;' id='description' placeholder="New note description "></textarea>
+			
+		</div>
+
+		<div class='title'>
+			<p>Arash's note keeper</p>
+			<span>Make Your Notes Available</span>
+		</div>
+	</div>
+	<script type="text/javascript">
+
+		//Model
+
+		notes = JSON.parse(localStorage.getItem('notes'))
+
+		loadData = true		
+		if ((notes===null) || (!loadData) ){console.log('bingo');notes=[]}
+		
+		editing = false
+
+		function addToData(tlt,dcr){
+			newObject={
+				title:tlt,
+				description:dcr,
+				date: new Date().toLocaleString('en-US'),
+				id:'' + new Date().getTime()
+			}
+			notes.push(newObject)
+		}
+
+		function deleteNoteData(idToDelete){
+			if(confirm('You are about to remove this note. Are you sure?')){
+
+				notes = notes.filter(function(item){
+					if (item.id===idToDelete){
+						return false
+					}else{
+						return true
+					}
+
+				}) 
+			}
+			
+		}
+
+		function updateNoteData(tlt,dcr,editid){
+			notes.forEach(function(item){
+				if (item.id===editid){
+					item.title=tlt
+					item.description=dcr
+				}
+			})
+		}
+
+		function saveNotes(){
+			localStorage.setItem('notes',JSON.stringify(notes))
+		}
+
+		
+		//View
+
+		allBoxElement = document.createElement('div')
+		allBoxElement.setAttribute('class', 'main-note-box')
+		document.body.appendChild(allBoxElement)
+
+
+		function render(){
+			allBoxElement.innerHTML = '';
+			notes.forEach(function(item){
+				addNoteBox(item)
+			})
+		}
+
+		function addNoteBox(obj){
+
+			//Creating Elements
+			boxElement = document.createElement('div')			
+			titleElement = document.createElement('p')
+			dateElement = document.createElement('span')
+			descriptionElement = document.createElement('p')
+			deleteButtonElement = document.createElement('button')
+			editButtonElement = document.createElement('button')
+
+
+			//Give Label To Elements
+			titleElement.innerText = obj.title
+			dateElement.innerText = obj.date
+			descriptionElement.innerText = obj.description
+			deleteButtonElement.innerText = 'x'
+			editButtonElement.innerText = 'e'
+
+			//Give class attribute to elements
+			boxElement.setAttribute('class', 'note-box')
+			titleElement.setAttribute('class','note-title')
+			dateElement.setAttribute('class', 'date')			
+			descriptionElement.setAttribute('class','description')
+
+			//Give Attributes To Elements
+			deleteButtonElement.onclick = deleteNote
+			editButtonElement.onclick = editNote
+			deleteButtonElement.id = obj.id
+			editButtonElement.id = obj.id
+
+
+
+			//Add Elements To Page
+			allBoxElement.appendChild(boxElement)
+			titleElement.append(dateElement)
+			boxElement.append(titleElement,editButtonElement,deleteButtonElement,descriptionElement)
+			
+
+			console.log(obj.date)
+
+		}
+
+		function makeEditBox(obj){
+
+			//creating Elements
+			editBoxElement = document.createElement('div')
+			editTitleElement = document.createElement('input')
+			editDescriptionElement = document.createElement('textarea')
+			updateEditButton = document.createElement('button')
+			cancelEditButton = document.createElement('button')
+
+			//Give Class Attribute To Elements
+			editBoxElement.setAttribute('class', 'edit-box')
+			editTitleElement.setAttribute('class', 'title-edit')
+			editDescriptionElement.setAttribute('class','description-edit')
+
+
+			//Give attribute to Elements
+			editTitleElement.setAttribute('type', 'text')
+			editTitleElement.setAttribute('id', 'editedTitle')
+			editTitleElement.setAttribute('maxlength', '64')			
+			editDescriptionElement.setAttribute('id', 'editedDescription')
+			updateEditButton.innerText = 'update'
+			cancelEditButton.innerText = 'cancel'
+			updateEditButton.onclick = updateNote
+			cancelEditButton.onclick = cancelEdit
+
+			//Give initial vale to elements
+			editTitleElement.value = obj.title
+			editDescriptionElement.value = obj.description
+			editTitleElement.select()
+
+
+			//Add Elements To Page
+			targetBox = document.getElementById(idToEdit).parentElement
+			targetBox.appendChild(editBoxElement)
+			editBoxElement.append(editTitleElement,updateEditButton,cancelEditButton,editDescriptionElement)
+			
+
+		}
+
+		render()
+
+		//Control
+
+		
+		function submit(event){			
+			titleElement = document.getElementById('title')
+			title=titleElement.value			
+			descriptionElement = document.getElementById('description')
+			description = descriptionElement.value
+
+			addToData(title,description)
+
+
+			titleElement.value=''
+			descriptionElement.value =''
+			saveNotes()
+			render()
+			
+		}
+
+		function deleteNote(event){			
+			idToDelete = event.target.id			
+			deleteNoteData(idToDelete)
+
+			saveNotes()	
+			render()
+					
+		}	
+
+		function editNote(event){
+			if (editing){return}
+			editing=true	
+			idToEdit = event.target.id
+			objectToEdit = notes.find(note=>note.id===idToEdit)			
+			makeEditBox(objectToEdit)
+
+		}
+
+		function updateNote(event){
+			editedTitle = document.getElementById('editedTitle').value
+			editedDescription = document.getElementById('editedDescription').value
+			updateNoteData(editedTitle,editedDescription,idToEdit)
+			editBoxElement.remove()
+
+			saveNotes()	
+			render()
+			editing=false
+
+		}
+
+		function cancelEdit(event){
+			editing=false
+			render()
+		}
+
+
+		
+
+	</script>
+
+
+</body>
+</html>
+
