@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Arash's todo app</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,700;1,100;1,400&display=swap" rel="stylesheet">
+	<style type="text/css">
+		body{
+			font-family: Arial;
+			font-size: 16px;
+			display: grid;
+			grid-template-columns: 120px 1fr 120px;
+			height:94vh;
+		}
+		.side-bar{
+			height:100%;
+			background: url('icons/side-pattern.png');
+			background-repeat: repeat-y;
+			margin-top: 2vh;
+
+
+		}
+		.title{
+			font-size:48px;
+			text-align: center;
+			margin-top: 40px;
+		}
+		.upper-container{
+			height: 54px;
+			width:80%;
+			margin-left: 10%;
+			margin-top: 60px;
+			margin-bottom: 20px;
+			display: flex;
+			font-family: roboto;
+			font-weight: bold;
+
+		}
+		.text-input{
+			height: 90%;
+			flex:1;
+			font-family: Arial;
+			font-size: 22px;			
+			border-radius: 24px;
+			margin-right:6px;
+			padding-left: 10px;
+		}
+		.date-time{
+			display:block;
+			height: 45%;
+			width:120px;
+			font-family: Arial;
+			font-size:14px;			
+			background-color: #149c4f;
+			color: white;
+			text-align: center;
+			border:none;
+			margin-top: 4px;
+			border-radius: 8px;
+
+		}
+		.upper-container button{
+			height:90%;
+			width:64px;
+			margin-left: 12px;
+			vertical-align: center;
+			margin-top: 2px;
+			background-color: black;
+			border: none;
+			border-radius: 8px;
+
+			
+		}
+		.upper-container button:hover{
+			background-color: white;
+			border: 1px solid black;
+
+		}
+
+		.upper-container button:hover img{
+			filter: invert(0);
+		}
+
+
+		.upper-container img{
+			height:90%;
+			padding-top: 4px;
+			filter: invert(1);
+		}
+
+		.bottom-container{
+			background-color: #149c4f;
+			width: calc(80% - 94px);
+			margin-left: 10%;
+			padding:8px 12px 8px 4px;
+			border-radius: 12px;
+		}
+
+		.item-container{
+			display: grid;
+			grid-template-columns: 1fr 46px 46px ;			
+			width:100%;
+			margin-bottom: 0;
+			margin-top:  0;
+			padding-top: 8px;
+			padding-bottom: 8px;			
+			border:5px solid #149c4f;
+			border-radius: 32px;
+			background-image : url('icons/pattern1.jpg');
+
+			
+		}
+
+
+		.item-container div{
+			text-align: left;
+			vertical-align: center;
+			padding-top: 6px;
+			font-size: 18px;
+			margin-left:10px;
+			
+		}
+		.item-container span{
+			color:#149c4f;
+			font-size: 14px;
+			margin-left: 6px;
+		}
+		.item-container img{
+			height:86%;
+			padding-top: 2px;
+			transition: filter 0.2s;
+		}
+		
+		.item-container button{
+			height: 28px;
+			width: 32px;			
+			margin-top: 0;
+			border: 1px solid #149c4f;
+			background-color: white;
+			border-radius: 4px;
+			transition: background-color 0.5s;
+			margin-left:0;
+			padding-right: 4px;
+		}
+
+		.item-container button:hover{
+			background-color: #149c4f;
+			
+		}
+
+
+		.item-container button:hover img{
+			filter: brightness(100);
+		}
+
+		.edit-box{
+			display: flex;
+			background-image : url('icons/pattern1.jpg');
+			height:48px;
+			vertical-align: center;
+			border: 2px solid red;
+			border-radius: 32px;
+			padding-left: 20px;
+			justify-content: space-between;
+
+		}
+		.edit-box input{
+			margin-top:5px;
+			height:66%;
+			border-radius: 10px;
+			margin-right: 10px;
+			border: 1px solid lightgray;
+			font-size: 14px;
+
+		}
+
+		.edit-box #edited-txt{
+			flex:1;
+			padding-left: 10px;
+
+		}
+
+		.edit-box button{
+			height:60%;
+			width: 72px;
+			color:white;
+			background-color: #149c4f;
+			font-size: 16px;
+			font-weight: bold;
+			border: none;
+			border-radius: 20px;
+			
+			margin:8px;			
+			
+		}
+
+		.edit-box button:hover{
+			background-color: white;
+			color:#149c4f;
+			border:2px solid #149c4f;
+
+		}
+		
+	</style>
+	
+</head>
+<body>
+	<div class='side-bar'>
+		
+	</div>
+	<main>
+
+		<div class=title>
+			Make Your Todo List
+		</div>
+		<div class='upper-container'>
+			<input type="text" id="new_todo_input" class='text-input' placeholder="New Todo">
+			<div>
+			<input type="date" id=todoDate  class='date-time'>
+			<input type="time" id=todoTime  class='date-time'>
+			</div>
+			<button onclick="add_item();"><img src="icons/add.png"></button>
+		</div>
+		<div id='container' class='bottom-container'>
+			
+		</div>
+	</main>
+
+	<div class='side-bar'>
+		
+	</div>
+
+<script type="text/javascript">
+
+
+	//Model
+
+
+	let todos
+
+	const savedTodos = JSON.parse(localStorage.getItem('todos'))
+
+	if(Array.isArray(savedTodos)){
+		todos = savedTodos
+
+	}else{
+			 todos=[{title:'Get groceries',
+				dueDate:'2022-06-24',
+				dueTime:'07:21',
+				id:'id1',
+				done:false
+			},{
+				title:'Wash Car',
+				dueDate:'2022-06-28',
+				dueTime:'07:21',
+				id:'id2',
+				done:false
+			},{
+				title:'Make Dinner',
+				dueDate:'2022-07-01',
+				dueTime:'07:21',
+				id:'id3',
+				done:false
+			}];
+				 
+		}
+	function saveTodos(){
+		localStorage.setItem('todos',JSON.stringify(todos))
+	}
+
+	function pushNewTodo(new_todo){				
+		todos.push(new_todo);
+	}
+
+	function removeTodo(idToDelete){
+
+		todos = todos.filter(function(td){			
+			if(td.id===idToDelete){
+				return false
+			}
+			else{
+				return true
+			}
+		})
+
+	}
+
+	function TodoEdit(tlt,date,time,editId){		
+		todos.forEach(function(item){
+			if (item.id === editId){				
+				item.title = tlt
+				item.dueDate = date
+				item.dueTime = time
+
+			}
+
+		})
+		render()
+	}
+
+	
+	
+	//View
+	function addTodo(td) {
+		let checkboxElement = document.createElement('input')
+		checkboxElement.setAttribute('type','checkbox')
+		checkboxElement.checked=td.done
+		checkboxElement.onchange = checkTodo
+		checkboxElement.id = 'cb'+td.id;			
+		let todoTextElement = document.createElement('div');
+		todoTextElement.innerText = td.title;
+		let todoDateElement = document.createElement('span');
+		todoDateElement.innerText = '('+td.dueDate+'  //  '+td.dueTime+')';
+		todoTextElement.append(todoDateElement);
+		todoContainer=document.createElement('div')
+		allContainer=document.getElementById('container')
+		allContainer.appendChild(todoContainer);		
+		todoContainer.appendChild(todoTextElement);
+		todoTextElement.prepend(checkboxElement)
+		deleteButtonElement = document.createElement('button');
+		deleteButtonElement.innerHTML = "<img src='icons/trash.png'>"		
+		deleteButtonElement.id = td.id;
+		todoContainer.id= td.id;				
+		deleteButtonElement.onclick=deleteTodo;
+		todoContainer.appendChild(deleteButtonElement);
+		editButtonElement = document.createElement('button')
+		editButtonElement.innerHTML =  "<img src='icons/edit.png'>"		
+		editButtonElement.id = td.id;
+		editButtonElement.onclick = editTodo;
+		todoContainer.appendChild(editButtonElement)
+		todoContainer.setAttribute('class', 'item-container')
+		if (td.done){todoTextElement.style='text-decoration: line-through;color:gray; display:inline-block'}
+		editing=false
+						
+
+
+	}
+	function render(){
+		allContainer=document.getElementById('container')
+		allContainer.innerHTML = ''
+		todos.forEach(function(td){
+			addTodo(td);
+		});
+	}	
+
+	function editTodo(event){
+		if (editing){return}
+		editing=true
+		idToEdit = event.path[1].id;				
+		objectToEdit = todos.find(todo=>todo.id===idToEdit)		
+		editBoxElement = document.createElement('div');
+		editBoxElement.setAttribute('class', 'edit-box')
+		editTextElement = document.createElement('input');
+		editTextElement.setAttribute('type','text')
+		editTextElement.id = 'edited-txt'
+		editTextElement.value = objectToEdit.title
+		editDateElement = document.createElement('input')
+		editDateElement.setAttribute('type','date')
+		editDateElement.id = 'edited-date' 
+		editDateElement.value = objectToEdit.dueDate
+		editTimeElement = document.createElement('input')
+		editTimeElement.setAttribute('type','time')
+		editTimeElement.id = 'edited-time' 
+		editTimeElement.value = objectToEdit.dueTime
+		updateButton = document.createElement('button')
+		updateButton.innerText = 'Update'
+		updateButton.onclick = editUpdate
+		allContainer.appendChild(editBoxElement)
+		editBoxElement.append(editTextElement,editDateElement,editTimeElement,updateButton)
+		
+		
+	}
+
+	//Control
+
+	function deleteTodo(event){		
+		idToDelete=event.path[1].id;			
+		removeTodo(idToDelete)
+		render()
+		saveTodos()
+	}
+
+	function add_item(){
+		let textbox = document.getElementById('new_todo_input')
+		let new_todo_title = textbox.value;
+		let dateElement = document.getElementById('todoDate');
+		let new_todo_date=dateElement.value;
+		let new_todo_time=document.getElementById('todoTime').value
+		if ((new_todo_title==='')||(new_todo_date==='')||(new_todo_time==='')){return}
+		const new_todo_id = '' + new Date().getTime();
+		let new_todo = {title:new_todo_title,dueDate:new_todo_date,dueTime:new_todo_time,id:new_todo_id}
+		pushNewTodo(new_todo)		
+		saveTodos()
+		render()
+		textbox.value='';
+
+	}
+
+	function editUpdate(event){
+		editedTitle = document.getElementById('edited-txt').value
+		editedDate = document.getElementById('edited-date').value
+		editedTime = document.getElementById('edited-time').value
+		TodoEdit(editedTitle,editedDate,editedTime,idToEdit)
+		saveTodos()
+		editing=false
+		
+	}	
+
+	function checkTodo(event){
+		idToCheck = event.target.id.substring(2)
+		checkedElement = document.getElementById(event.target.id)	
+		todos.forEach(function(item){
+			if (item.id===idToCheck){
+				if (checkedElement.checked){
+					item.done = true
+				}else{
+					item.done=false
+				}
+			}
+		})
+		saveTodos()
+		render()
+
+	}
+
+	
+
+	render()
+	
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<style type="text/css">
+		img{
+			height: 220px;
+			width: 200px;
+			object-fit: contain;
+			margin-left:20px;
+			cursor: pointer;
+		}
+		.card-box{
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+		.bottom-box{
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			width: 90%;
+			margin-left: 5%;
+		}
+		.bottom-box>*{
+			
+			
+			vertical-align: center;
+			padding: 5px;
+			font-size: 24px;
+			text-align: center;
+		}
+		#fails{color:red;}
+		#won-label{color: green}
+		
+	</style>
+</head>
+<body>
+
+	<div id='card-box' class='card-box'></div>
+
+	<div class='bottom-box'>
+		<span id='fails'></span>
+		<button onclick='main()' >start</button>
+		<span id='won-label'></span>
+	</div>
+
+
+	<script type="text/javascript">
+
+
+		//Model
+		function shuffle(arr){
+			shuffled=[]
+			numShuffled = []
+			c=0
+			while (c<arr.length){
+				rand = Math.floor(Math.random()*arr.length)
+				if (!(numShuffled.includes(rand))){
+					numShuffled.push(rand)
+					c=c+1
+				}
+			}
+			numShuffled.forEach(c=>shuffled.push(arr[c]))
+			return shuffled	
+		}
+
+		function makeCards(srcs){
+			Cards=[]
+			c=1
+			srcs.forEach(function(item){
+				obj = {
+					id : ''+c,
+					src : item,
+					solved : true
+				}
+				Cards.push(obj)
+				c=c+1
+			})
+			return Cards
+		}
+
+		
+		function getImg(){
+
+			pairCount = 6
+		
+			fruitDirs=[
+			"apple.jpg","banana.webp","blackberry.jpg","carot.jpg","coconut.webp","cucumber.jpg","grape.jpg","kiwi.png","melon.jpg","orange.jpg","peach.jpg","pinapple.jpg","pomegrant.jpg","strawberry.jpg","watermelon.jpg"
+			]
+		
+			c=0
+			randomNumbers = []
+			while (c<pairCount){
+				rand = Math.floor(Math.random()*fruitDirs.length)			
+				if (!(randomNumbers.includes(rand))){
+					randomNumbers.push(rand)
+					randomNumbers.push(rand)				
+					c=c+1
+				}
+			}
+			imgSrcs = []
+			randomNumbers.forEach(c=>imgSrcs.push('Fruit/'+fruitDirs[c]))
+
+			imgSrcs = shuffle(imgSrcs)
+			return imgSrcs
+		}
+
+		function flipCards(Cards){
+			Cards.forEach(card=> card.solved=false)
+
+		}
+
+
+		//View
+		
+
+		function showCards(Cards){
+			Cards.forEach(function(item){
+				cardBoxElement=  document.getElementById('card-box')
+				cardElement = document.createElement('img')
+				if (item.solved){
+					cardElement.setAttribute('src', item.src)
+				}else{
+					cardElement.setAttribute('src','Fruit/basket.jpg')
+				}
+				cardElement.id = item.id
+				cardElement.onclick = cardClick
+				cardBoxElement.appendChild(cardElement)
+			})
+		}
+
+		function render(){
+			cardBoxElement=  document.getElementById('card-box')
+			cardBoxElement.innerHTML = ''
+			showCards(Cards)
+			document.getElementById('fails').innerText = 'Fails: '+failed
+			if (sucsses===pairCount){
+				document.getElementById('won-label').innerText = 'You Won! Congradulation'
+			}
+		}
+
+		//
+
+		function cardClick(event){
+			cardId = event.target.id
+			if (Cards[Number(cardId)-1].solved){				
+				return
+			}
+			Cards.forEach(function(card){ if(card.id===cardId){card.solved=true}})		
+			
+			
+			if (secondClick){
+				if ((Cards[Number(cardId)-1].src)===lastClickItem){	
+					sucsses = sucsses+1				
+					render()
+					
+				}else{
+					failed=failed+1
+					render()
+					Cards[Number(cardId)-1].solved = false
+					Cards[Number(lastClickedId)-1].solved = false
+					setTimeout(render,1000)
+				}
+
+				secondClick = false
+			}else{
+				lastClickItem = Cards[Number(cardId)-1].src
+				secondClick = true
+				render()
+			}
+			lastClickedId = cardId
+			//setTimeout(render,2000)
+			
+		}
+
+		////
+		function main(){
+
+			secondClick = false
+			lastClickedId = null 
+			failed = 0
+			sucsses = 0
+
+			imgSrcs = getImg()
+			Cards = makeCards(imgSrcs)
+			render()
+			flipCards(Cards)
+			setTimeout(render,5000)
+			
+		}
+
+			
+
+
+		
+
+
+	</script>
+
+</body>
+</html>
